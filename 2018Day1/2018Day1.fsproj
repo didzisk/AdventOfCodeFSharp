@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>_2018Day1</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="MainCalc.fs" />
+    <None Include="CalcTest.fsx" />
+    <None Include="TestInput.fsx" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+</Project>
