@@ -1,5 +1,7 @@
 ﻿namespace IntcodeComputer
 
+open FSharpx.Collections
+
 module Machine =
 
     type ReturnMode =
@@ -13,6 +15,7 @@ module Machine =
         {
             PC:int;
             Memory:int64[];
+            Inputs:Queue<int64>;
             ReturnMode:ReturnMode
         }
 
@@ -56,9 +59,40 @@ module Machine =
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st * getArg2 st
                 (StepsRemaining, pc+4)
+            | 3L ->
+                let addr31 = int st.Memory.[pc+1]
+                if not st.Inputs.IsEmpty then
+                    let (elm, tail) = st.Inputs.Uncons
+                    st.Memory.[addr31]<-elm
+                    (ProcessedInput, pc+2)
+                else
+                    (WaitingForInput, pc)
+                (*
+                						var addr31 = st.memory[st.pc + 1];
+                						if (arg1Mode == 2)
+                						{
+                							addr31 = st.RelativeBase + addr31;
+                						}
+                						if (Inputs.Count > 0)
+                						{
+                							st.memory[addr31] = Inputs[0];
+                							Inputs.RemoveAt(0);
+                							st.pc = st.pc + 2;
+                							if (calcMode == CalcMode.RunToFirstInput)
+                							{
+                								st.ReturnMode = ReturnMode.ProcessedInput;
+                								return st;
+                							}
+                						}
+                						else
+                						{
+                							st.ReturnMode = ReturnMode.WaitingForInput;
+                							return st;
+                						}
+                *)
             | _ -> 
                 (RanToHalt, pc)
-        {st with PC=newpc; ReturnMode = ret}
+        {st with PC=newpc; ReturnMode = ret; Inputs = tail}
 
     let rec run st =
         let st = step(st)
