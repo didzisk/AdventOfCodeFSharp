@@ -49,24 +49,24 @@ module Machine =
     let step st =
         let pc=st.PC
         let opcode = st.Memory.[pc]
-        let (ret, newpc)=
+        let (ret, newpc, inputs)=
             match opcode with
             | 1L ->
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st + getArg2 st
-                (StepsRemaining, pc+4)
+                (StepsRemaining, pc+4, st.Inputs)
             | 2L -> 
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st * getArg2 st
-                (StepsRemaining, pc+4)
+                (StepsRemaining, pc+4, st.Inputs)
             | 3L ->
                 let addr31 = int st.Memory.[pc+1]
                 if not st.Inputs.IsEmpty then
                     let (elm, tail) = st.Inputs.Uncons
                     st.Memory.[addr31]<-elm
-                    (ProcessedInput, pc+2)
+                    (ProcessedInput, pc+2, tail)
                 else
-                    (WaitingForInput, pc)
+                    (WaitingForInput, pc, st.Inputs)
                 (*
                 						var addr31 = st.memory[st.pc + 1];
                 						if (arg1Mode == 2)
@@ -91,8 +91,8 @@ module Machine =
                 						}
                 *)
             | _ -> 
-                (RanToHalt, pc)
-        {st with PC=newpc; ReturnMode = ret; Inputs = tail}
+                (RanToHalt, pc, st.Inputs)
+        {st with PC=newpc; ReturnMode = ret; Inputs = inputs}
 
     let rec run st =
         let st = step(st)
@@ -109,14 +109,23 @@ module Machine =
         {
             PC=0;
             Memory = s;
-            ReturnMode = StepsRemaining
+            ReturnMode = StepsRemaining;
+            Inputs = Queue.empty
         }
 
-    let initMachineFromString (s:string) =
+    let initMachineFromString s =
         {
             PC=0;
             Memory = readIntcode s;
-            ReturnMode = StepsRemaining
+            ReturnMode = StepsRemaining;
+            Inputs = Queue.empty
+        }
+    let initMachineFromStringWithInputs s inp=
+        {
+            PC=0;
+            Memory = readIntcode s;
+            ReturnMode = StepsRemaining;
+            Inputs = Queue.ofList inp
         }
 
     let runFromString (s:string) =
