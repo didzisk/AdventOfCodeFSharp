@@ -10,8 +10,4 @@
     <Compile Include="Machine.fs" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FSharpx.Collections" Version="2.1.2" />
-  </ItemGroup>
-
 </Project>

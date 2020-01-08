@@ -1,7 +1,5 @@
 ﻿namespace IntcodeComputer
 
-open FSharpx.Collections
-
 module Machine =
 
     type ReturnMode =
@@ -15,58 +13,60 @@ module Machine =
         {
             PC:int;
             Memory:int64[];
-            Inputs:Queue<int64>;
-            ReturnMode:ReturnMode
+            Inputs:List<int64>;
+            ReturnMode:ReturnMode;
+            RelativeBase:int
         }
 
     let getArg1 (st:MachineStatus) =
         let pc=st.PC
-        let opcode = st.Memory.[pc]
-        let arg1Mode = 0
+        let code = int st.Memory.[pc]
+        let opcode = code % 100
+        let arg1Mode = (code % 1000 - code % 100) / 100
         match opcode with
-        | 1L | 2L->
+        | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9->
             let arg = st.Memory.[st.PC + 1]
             match arg1Mode with
             | 0 -> st.Memory.[int arg]
-    //        	| 2 -> st.memory.[arg+st.RelativeBase];
+            | 2 -> st.Memory.[int arg + st.RelativeBase];
             | _ -> arg
         | _ -> 0L
 
     let getArg2 (st:MachineStatus) =
         let pc=st.PC
-        let opcode = st.Memory.[pc]
-        let arg2Mode = 0
+        let code = int st.Memory.[pc]
+        let opcode = code % 100
+        let arg2Mode = (code % 10000 - code % 1000) / 1000
         match opcode with
-        | 1L | 2L->
+        | 1 | 2 | 5 | 6 | 7 | 8 ->
             let arg = st.Memory.[st.PC + 2]
             match arg2Mode with
             | 0 -> st.Memory.[int arg]
-    //        	| 2 -> st.memory.[arg+st.RelativeBase];
+            | 2 -> st.Memory.[int arg + st.RelativeBase];
             | _ -> arg
         | _ -> 0L
 
 
-    let step st =
+    let step st fo =
         let pc=st.PC
-        let opcode = st.Memory.[pc]
-        let (ret, newpc, inputs)=
+        let opcode = int st.Memory.[pc] % 100
+        let (ret, newpc, inputs, rbase)=
             match opcode with
-            | 1L ->
+            | 1 ->
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st + getArg2 st
-                (StepsRemaining, pc+4, st.Inputs)
-            | 2L -> 
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+            | 2 -> 
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st * getArg2 st
-                (StepsRemaining, pc+4, st.Inputs)
-            | 3L ->
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+            | 3 ->
                 let addr31 = int st.Memory.[pc+1]
-                if not st.Inputs.IsEmpty then
-                    let (elm, tail) = st.Inputs.Uncons
-                    st.Memory.[addr31]<-elm
-                    (ProcessedInput, pc+2, tail)
-                else
-                    (WaitingForInput, pc, st.Inputs)
+                match st.Inputs with
+                | head :: tail -> 
+                    st.Memory.[addr31]<-head
+                    (ProcessedInput, pc+2, tail, st.RelativeBase)
+                | [] -> (WaitingForInput, pc, st.Inputs, st.RelativeBase)
                 (*
                 						var addr31 = st.memory[st.pc + 1];
                 						if (arg1Mode == 2)
@@ -90,17 +90,56 @@ module Machine =
                 							return st;
                 						}
                 *)
+            | 4 ->
+                getArg1 st |> fo
+                (StepsRemaining, pc+2, st.Inputs, st.RelativeBase)
+            | 5 -> //JNZ
+                if getArg1 st <> 0L then
+                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase)
+                else
+                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase)
+            | 6 -> //JZ
+                if getArg1 st = 0L then
+                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase)
+                else
+                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase)
+            | 7 -> //LT 
+                let code = int st.Memory.[pc]
+                let addrt = 
+                    if code / 10000 =2 then
+                        int st.Memory.[int st.PC + 3]
+                    else
+                        int st.Memory.[int st.PC + 3] + st.RelativeBase
+                if getArg1 st < getArg2 st then
+                    st.Memory.[addrt] <- 1L
+                else
+                    st.Memory.[addrt] <- 0L
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+            | 8 -> //EQ
+                let code = int st.Memory.[pc]
+                let addrt = 
+                    if code / 10000 =2 then
+                        int st.Memory.[int st.PC + 3]
+                    else
+                        int st.Memory.[int st.PC + 3] + st.RelativeBase
+                if getArg1 st = getArg2 st then
+                    st.Memory.[addrt] <- 1L
+                else
+                    st.Memory.[addrt] <- 0L
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+            | 9 -> //set rel base
+                (StepsRemaining, pc+2, st.Inputs, st.RelativeBase+int (getArg1 st))
             | _ -> 
-                (RanToHalt, pc, st.Inputs)
-        {st with PC=newpc; ReturnMode = ret; Inputs = inputs}
+                (RanToHalt, pc, st.Inputs, st.RelativeBase)
+        {st with PC=newpc; ReturnMode = ret; Inputs = inputs; RelativeBase = rbase}
 
-    let rec run st =
-        let st = step(st)
+    let rec run fo st =
+        let st = step st fo
         if st.ReturnMode = RanToHalt then
             st
         else
-            run st
-
+            run fo st
+ 
     let readIntcode (s:string) =
         s.Split [|','|]
         |> Array.map (fun x-> x.Trim [|' '|] |> int64)
@@ -110,7 +149,8 @@ module Machine =
             PC=0;
             Memory = s;
             ReturnMode = StepsRemaining;
-            Inputs = Queue.empty
+            Inputs = [];
+            RelativeBase = 0
         }
 
     let initMachineFromString s =
@@ -118,18 +158,23 @@ module Machine =
             PC=0;
             Memory = readIntcode s;
             ReturnMode = StepsRemaining;
-            Inputs = Queue.empty
+            Inputs = [];
+            RelativeBase = 0
         }
     let initMachineFromStringWithInputs s inp=
         {
             PC=0;
             Memory = readIntcode s;
             ReturnMode = StepsRemaining;
-            Inputs = Queue.ofList inp
+            Inputs = inp;
+            RelativeBase = 0
         }
 
-    let runFromString (s:string) =
-        initMachineFromString s |> run
+    let runFromString (s:string) fo =
+        initMachineFromString s |> run fo
 
-    let runFrom (s:int64[]) =
-        initMachine s |> run
+    let runFromStringWithInputs s inp fo =
+        initMachineFromStringWithInputs s inp |> (run fo)
+
+    let runFrom (s:int64[]) fo =
+        initMachine s |> run fo
