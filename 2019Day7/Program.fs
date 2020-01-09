@@ -25,7 +25,7 @@ let main argv =
         printfn ""
         phases
         |> List.map initAmp
-
+        (*
     let calcOutput1 amps =
         let action signalSoFar st = 
             let newst=runAmp signalSoFar st
@@ -46,27 +46,36 @@ let main argv =
         |> Seq.max 
 
     calc1 |> printfn "max result %A"
-    //combinations    |> Seq.map
-    let calc2disp = 
-        permutations [5L;6L;7L;8L;9L] Set.empty 
-        |> Seq.map initAmps
-        |> Seq.map calcOutput1
-        |> Seq.iter  (printfn "%A") 
-    calc2disp |> ignore
-
+    *)
     let calcOutput2 inVal amps =
-        let action (signalSoFar,r) st = 
+        
+        let action (signalSoFar, _, ampsSoFar) st = 
             let newst=runAmp signalSoFar st
-            newst.Result, newst.ReturnMode
+            (newst.Result, newst.ReturnMode, ampsSoFar @ [newst])
         amps
-        |> List.fold action inVal
+        |> List.fold action (inVal, Machine.StepsRemaining, [])
 
 
     let rec calc2 inVal amps = //takes initialized amps, feeds with signal
-        let (res, r) = calcOutput2 inVal amps
+        let (res, r, newAmps) = calcOutput2 inVal amps
         if r=Machine.RanToHalt then
             res
         else
-            res
+            calc2 res newAmps
+
+    let calc2disp = 
+        permutations [5L;6L;7L;8L;9L] Set.empty 
+        |> Seq.map initAmps
+        |> Seq.map (calc2 0L)
+        |> Seq.iter  (printfn "%A") 
+    calc2disp |> ignore
+
+    let calc2calc = 
+        permutations [5L;6L;7L;8L;9L] Set.empty 
+        |> Seq.map initAmps
+        |> Seq.map (calc2 0L)
+        |> Seq.max
+        |> printfn "Result %A"
+
     
     0 // return an integer exit code
