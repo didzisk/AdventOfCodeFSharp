@@ -15,10 +15,11 @@ module Machine =
             Memory:int64[];
             Inputs:List<int64>;
             ReturnMode:ReturnMode;
-            RelativeBase:int
+            RelativeBase:int;
+            Result:int64
         }
 
-    let getArg1 (st:MachineStatus) =
+    let private getArg1 (st:MachineStatus) =
         let pc=st.PC
         let code = int st.Memory.[pc]
         let opcode = code % 100
@@ -32,7 +33,7 @@ module Machine =
             | _ -> arg
         | _ -> 0L
 
-    let getArg2 (st:MachineStatus) =
+    let private getArg2 (st:MachineStatus) =
         let pc=st.PC
         let code = int st.Memory.[pc]
         let opcode = code % 100
@@ -47,39 +48,40 @@ module Machine =
         | _ -> 0L
 
 
-    let step st fo =
+    let private step st fo =
         let pc=st.PC
         let opcode = int st.Memory.[pc] % 100
-        let (ret, newpc, inputs, rbase)=
+        let (ret, newpc, inputs, rbase, result)=
             match opcode with
             | 1 ->
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st + getArg2 st
-                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 2 -> 
                 let addrt = int st.Memory.[pc+3]
                 st.Memory.[addrt] <- getArg1 st * getArg2 st
-                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 3 ->
                 let addr31 = int st.Memory.[pc+1]
                 match st.Inputs with
                 | head :: tail -> 
                     st.Memory.[addr31]<-head
-                    (ProcessedInput, pc+2, tail, st.RelativeBase)
-                | [] -> (WaitingForInput, pc, st.Inputs, st.RelativeBase)
+                    (ProcessedInput, pc+2, tail, st.RelativeBase, st.Result)
+                | [] -> (WaitingForInput, pc, st.Inputs, st.RelativeBase, st.Result)
             | 4 ->
-                getArg1 st |> fo
-                (StepsRemaining, pc+2, st.Inputs, st.RelativeBase)
+                let res=getArg1 st
+                fo res
+                (ProducedOutput, pc+2, st.Inputs, st.RelativeBase, res)
             | 5 -> //JNZ
                 if getArg1 st <> 0L then
-                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase)
+                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase, st.Result)
                 else
-                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase)
+                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase, st.Result)
             | 6 -> //JZ
                 if getArg1 st = 0L then
-                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase)
+                    (StepsRemaining, int (getArg2 st), st.Inputs, st.RelativeBase, st.Result)
                 else
-                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase)
+                    (StepsRemaining, pc+3, st.Inputs, st.RelativeBase, st.Result)
             | 7 -> //LT 
                 let code = int st.Memory.[pc]
                 let addrt = 
@@ -91,7 +93,7 @@ module Machine =
                     st.Memory.[addrt] <- 1L
                 else
                     st.Memory.[addrt] <- 0L
-                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 8 -> //EQ
                 let code = int st.Memory.[pc]
                 let addrt = 
@@ -103,16 +105,22 @@ module Machine =
                     st.Memory.[addrt] <- 1L
                 else
                     st.Memory.[addrt] <- 0L
-                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase)
+                (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 9 -> //set rel base
-                (StepsRemaining, pc+2, st.Inputs, st.RelativeBase+int (getArg1 st))
+                (StepsRemaining, pc+2, st.Inputs, st.RelativeBase+int (getArg1 st), st.Result)
             | _ -> 
-                (RanToHalt, pc, st.Inputs, st.RelativeBase)
-        {st with PC=newpc; ReturnMode = ret; Inputs = inputs; RelativeBase = rbase}
+                (RanToHalt, pc, st.Inputs, st.RelativeBase, st.Result)
+        {st with PC=newpc; ReturnMode = ret; Inputs = inputs; RelativeBase = rbase; Result = result}
 
     let rec run fo st =
         let st = step st fo
-        if st.ReturnMode = RanToHalt then
+        if (st.ReturnMode = RanToHalt) || (st.ReturnMode = WaitingForInput)  then
+            st
+        else
+            run fo st
+    let rec runOneInput fo st =
+        let st = step st fo
+        if (st.ReturnMode = RanToHalt) || (st.ReturnMode = ProcessedInput) then
             st
         else
             run fo st
@@ -127,7 +135,8 @@ module Machine =
             Memory = s;
             ReturnMode = StepsRemaining;
             Inputs = [];
-            RelativeBase = 0
+            RelativeBase = 0;
+            Result = 0L;
         }
 
     let initMachineFromString s =
@@ -136,7 +145,8 @@ module Machine =
             Memory = readIntcode s;
             ReturnMode = StepsRemaining;
             Inputs = [];
-            RelativeBase = 0
+            RelativeBase = 0;
+            Result = 0L;
         }
     let initMachineFromStringWithInputs s inp=
         {
@@ -144,7 +154,8 @@ module Machine =
             Memory = readIntcode s;
             ReturnMode = StepsRemaining;
             Inputs = inp;
-            RelativeBase = 0
+            RelativeBase = 0;
+            Result = 0L;
         }
 
     let runFromString (s:string) fo =

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>_2019Day7</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="LearnToFold.fs" />
+    <Compile Include="Permutations.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntcodeComputer\IntcodeComputer.fsproj" />
+  </ItemGroup>
+
+</Project>

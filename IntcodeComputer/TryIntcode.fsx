@@ -6,7 +6,7 @@ open IntcodeComputer
 
 let dfo _ = ()
 
-let st:Machine.MachineStatus = {PC=0; Memory = [|1L;9L;10L;3L;2L;3L;11L;0L;99L;30L;40L;50L|]; ReturnMode=Machine.StepsRemaining; Inputs=[]; RelativeBase = 0}
+let st:Machine.MachineStatus = {PC=0; Memory = [|1L;9L;10L;3L;2L;3L;11L;0L;99L;30L;40L;50L|]; ReturnMode=Machine.StepsRemaining; Inputs=[]; RelativeBase = 0; Result = 0L}
 
 let stnew=Machine.run dfo st 
 
