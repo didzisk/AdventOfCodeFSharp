@@ -47,6 +47,12 @@ module Machine =
             | _ -> arg
         | _ -> 0L
 
+    let private getAddrT st = 
+        let code = int st.Memory.[st.PC]
+        if code / 10000 =2 then
+            int st.Memory.[int st.PC + 3] + st.RelativeBase
+        else
+            int st.Memory.[int st.PC + 3]
 
     let private step st fo =
         let pc=st.PC
@@ -55,20 +61,10 @@ module Machine =
         let (ret, newpc, inputs, rbase, result)=
             match opcode with
             | 1 ->
-                let addrt = 
-                    if code / 10000 =2 then
-                        int st.Memory.[int st.PC + 3] + st.RelativeBase
-                    else
-                        int st.Memory.[int st.PC + 3]
-                st.Memory.[addrt] <- getArg1 st + getArg2 st
+                st.Memory.[getAddrT st] <- getArg1 st + getArg2 st
                 (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 2 -> 
-                let addrt = 
-                    if code / 10000 =2 then
-                        int st.Memory.[int st.PC + 3] + st.RelativeBase
-                    else
-                        int st.Memory.[int st.PC + 3]
-                st.Memory.[addrt] <- getArg1 st * getArg2 st
+                st.Memory.[getAddrT st] <- getArg1 st * getArg2 st
                 (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 3 ->
                 let arg1Mode = code % 1000 - code % 100
@@ -98,11 +94,7 @@ module Machine =
                     (StepsRemaining, pc+3, st.Inputs, st.RelativeBase, st.Result)
             | 7 -> //LT 
                 let code = int st.Memory.[pc]
-                let addrt = 
-                    if code / 10000 =2 then
-                        int st.Memory.[int st.PC + 3] + st.RelativeBase
-                    else
-                        int st.Memory.[int st.PC + 3]
+                let addrt = getAddrT st
                 if getArg1 st < getArg2 st then
                     st.Memory.[addrt] <- 1L
                 else
@@ -110,11 +102,7 @@ module Machine =
                 (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 8 -> //EQ
                 let code = int st.Memory.[pc]
-                let addrt = 
-                    if code / 10000 =2 then
-                        int st.Memory.[int st.PC + 3] + st.RelativeBase
-                    else
-                        int st.Memory.[int st.PC + 3]
+                let addrt = getAddrT st
                 if getArg1 st = getArg2 st then
                     st.Memory.[addrt] <- 1L
                 else
