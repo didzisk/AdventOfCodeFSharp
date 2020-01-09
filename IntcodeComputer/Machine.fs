@@ -67,29 +67,6 @@ module Machine =
                     st.Memory.[addr31]<-head
                     (ProcessedInput, pc+2, tail, st.RelativeBase)
                 | [] -> (WaitingForInput, pc, st.Inputs, st.RelativeBase)
-                (*
-                						var addr31 = st.memory[st.pc + 1];
-                						if (arg1Mode == 2)
-                						{
-                							addr31 = st.RelativeBase + addr31;
-                						}
-                						if (Inputs.Count > 0)
-                						{
-                							st.memory[addr31] = Inputs[0];
-                							Inputs.RemoveAt(0);
-                							st.pc = st.pc + 2;
-                							if (calcMode == CalcMode.RunToFirstInput)
-                							{
-                								st.ReturnMode = ReturnMode.ProcessedInput;
-                								return st;
-                							}
-                						}
-                						else
-                						{
-                							st.ReturnMode = ReturnMode.WaitingForInput;
-                							return st;
-                						}
-                *)
             | 4 ->
                 getArg1 st |> fo
                 (StepsRemaining, pc+2, st.Inputs, st.RelativeBase)
