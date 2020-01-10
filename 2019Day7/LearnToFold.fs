@@ -17,5 +17,16 @@ let maxNameAndSize list =
        Some max
 
 
+let fibonacciUnfolder max (f1,f2)  =
+    if f1 > max then
+        None
+    else
+        // return value and new threaded state
+        let fNext = f1 + f2
+        let newState = (f2,fNext)
+        // f1 will be in the generated sequence
+        Some (f1,newState)
 
-
+let fibonacci max = List.unfold (fibonacciUnfolder max) (1,1)
+//example call: 
+//fibonacci 100

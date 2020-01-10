@@ -93,7 +93,6 @@ module Machine =
                 else
                     (StepsRemaining, pc+3, st.Inputs, st.RelativeBase, st.Result)
             | 7 -> //LT 
-                let code = int st.Memory.[pc]
                 let addrt = getAddrT st
                 if getArg1 st < getArg2 st then
                     st.Memory.[addrt] <- 1L
@@ -101,7 +100,6 @@ module Machine =
                     st.Memory.[addrt] <- 0L
                 (StepsRemaining, pc+4, st.Inputs, st.RelativeBase, st.Result)
             | 8 -> //EQ
-                let code = int st.Memory.[pc]
                 let addrt = getAddrT st
                 if getArg1 st = getArg2 st then
                     st.Memory.[addrt] <- 1L
@@ -131,7 +129,7 @@ module Machine =
         let a=
             s.Split [|','|]
             |> Array.map (fun x-> x.Trim [|' '|] |> int64)
-        let newLen=a.Length * 25 / 100
+        let newLen=a.Length * 25 / 100 //my experience says adding 25% free memory is usually enough
         Array.append a (Array.create newLen 0L)
         
 
