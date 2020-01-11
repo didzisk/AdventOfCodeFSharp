@@ -2,9 +2,10 @@
 
 open System.Drawing
 open System.Windows.Forms
+open System
 
 let mf=
-    let mainForm = new Form(Width = 620, Height = 450, Text = "Visualizer")
+    let mainForm = new Form(Width = 620, Height = 620, Text = "Visualizer")
     mainForm
 
 let pp (mainForm:Form) =
@@ -18,13 +19,41 @@ let pp (mainForm:Form) =
     formGraphics.Dispose();
     mainForm
 
-let rr (mainForm:Form) x =
+let rr (mainForm:Form) scale offsetX offsetY color x y =
+
+    let localX = offsetX+x*scale
+    let localY= offsetY-y*scale
 
     mainForm.Show()
 
-    let myBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
+    let myBrush = new System.Drawing.SolidBrush(color);
     let formGraphics=mainForm.CreateGraphics();
-    formGraphics.FillRectangle(myBrush, new Rectangle(x*10, x*10, 10, 10));
+    formGraphics.FillRectangle(myBrush, new Rectangle(localX, localY, scale, scale));
     myBrush.Dispose();
     formGraphics.Dispose();
-    mainForm
+    ()
+
+let rainbowPoint (mainForm:Form) scale offsetX offsetY r angle =
+
+    mainForm.Show()
+
+    let formGraphics=mainForm.CreateGraphics();
+    let rColors=    [
+        System.Drawing.Color.Red;
+        System.Drawing.Color.Orange;
+        System.Drawing.Color.Yellow;
+        System.Drawing.Color.Green;
+        System.Drawing.Color.Blue;
+        System.Drawing.Color.Indigo;
+        System.Drawing.Color.Violet;]
+    rColors
+    |> List.indexed
+    |> List.iter (fun (i, col)->
+            let localX=offsetX+scale*(int ((50.0+float i)*Math.Cos angle))
+            let localY=offsetY-scale*(int ((50.0+float i)*Math.Sin angle))
+            let myBrush = new System.Drawing.SolidBrush(col);
+            formGraphics.FillRectangle(myBrush, new Rectangle(localX, localY, scale, scale));
+            myBrush.Dispose();
+        )
+    formGraphics.Dispose();
+    ()
