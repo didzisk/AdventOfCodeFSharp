@@ -44,3 +44,33 @@ let wire (s:string) :point list =
     let (st,gg)=arr |> Array.fold folder ({X=0; Y=0; dist=0},[])
     gg
     
+let wire2 (s:string) = //:point list =
+    let arr = 
+       s.Split [|','|]
+       |> Array.map (fun x-> x.Trim [|' '|])
+       |> Array.toList
+
+    let rec produceWire (sp:point) (commands:string list)= 
+        seq{
+            match commands with
+            | [] -> ()
+            | command::tail ->
+                let dir=command.[0..0]
+                let (xinc, yinc) = 
+                    match dir with
+                    | "R" -> (1,0)
+                    | "L" -> (-1,0)
+                    | "U" -> (0,-1)
+                    | _   -> (0,1)
+                let num = int command.[1..]
+                for i in {1..num} do
+                    yield 
+                        {sp with 
+                            X=sp.X+xinc*i; 
+                            Y=sp.Y+yinc*i;
+                            dist=sp.dist+i
+                        }
+                yield! produceWire {sp with X=sp.X+xinc*num; Y=sp.Y+yinc*num; dist=sp.dist+num} tail
+        }
+         
+    produceWire {X=0; Y=0; dist=0} arr

@@ -33,7 +33,7 @@ let main argv =
         let rad = float deg / 1800.0 * Math.PI
         GridForm.rainbowPoint f 5 300 300 50 rad
 
-    (Console.ReadLine())
+    Console.ReadLine() |> ignore
     
 
     0 // return an integer exit code
