@@ -118,6 +118,14 @@ module Machine =
             st
         else
             run fo st
+
+    let rec runToOutput fo st =
+        let st = step st fo
+        if (st.ReturnMode = RanToHalt) || (st.ReturnMode = WaitingForInput) || (st.ReturnMode = ProducedOutput)  then
+            st
+        else
+            runToOutput fo st
+
     let rec runOneInput fo st =
         let st = step st fo
         if (st.ReturnMode = RanToHalt) || (st.ReturnMode = ProcessedInput) then
@@ -129,7 +137,7 @@ module Machine =
         let a=
             s.Split [|','|]
             |> Array.map (fun x-> x.Trim [|' '|] |> int64)
-        let newLen=a.Length * 25 / 100 //my experience says adding 25% free memory is usually enough
+        let newLen=a.Length * 2 //my experience says adding 50% free memory is usually enough
         Array.append a (Array.create newLen 0L)
         
 
