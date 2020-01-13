@@ -2,6 +2,7 @@
 
 open System
 open Wires
+open GridForm
 
 [<EntryPoint>]
 let main argv =
@@ -30,8 +31,14 @@ let main argv =
              sortBy (a.dist+b.dist)
              select (a,b,a.dist+b.dist)
      }
-     |> Seq.take 1
-     |> printfn "%A"
+    |> Seq.take 1
+    |> printfn "%A"
+
+    wireA
+    |> Seq.iter (fun p-> GridForm.SmallPoint GridForm.mf 0.04 320.0 320.0  System.Drawing.Color.Blue (float p.X) (float p.Y) )
+    wireB
+    |> Seq.iter (fun p-> GridForm.SmallPoint GridForm.mf 0.04 320.0 320.0  System.Drawing.Color.Red (float p.X) (float p.Y) )
  
+    Console.ReadLine () |> ignore
     0 // return an integer exit code
 
