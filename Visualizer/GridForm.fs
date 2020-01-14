@@ -52,6 +52,26 @@ let SmallPoint (mainForm:Form) (scale:float) offsetX offsetY color x y =
     formGraphics.Dispose();
     ()
 
+let SmallBall (mainForm:Form) (scale:float) offsetX offsetY color x y =
+
+    let pointSize = 
+        if scale < 1.0 then
+            1
+        else
+            int (Math.Floor scale)
+    let localX = int (offsetX+x*scale)
+    let localY= int (offsetY-y*scale)
+
+    mainForm.Show()
+
+    let myBrush = new System.Drawing.SolidBrush(color);
+    let formGraphics=mainForm.CreateGraphics();
+    formGraphics.FillEllipse (myBrush, new Rectangle(localX, localY, pointSize, pointSize));
+    myBrush.Dispose();
+    formGraphics.Dispose();
+    ()
+
+
 let rainbowPoint (mainForm:Form) scale offsetX offsetY r angle =
 
     mainForm.Show()
