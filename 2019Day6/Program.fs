@@ -24,12 +24,7 @@ D)I
 E)J
 J)K
 K)L"
-    let treeAddOrbit (t:tree) a b =
-        
-        t
 
-    let parents=Map.empty
-    let children=Map.empty
     let parseInput (s:string) =
         s.Split [|'\n'|]
         |> Array.map (
@@ -37,7 +32,6 @@ K)L"
                 let orb= x.Split [|')'|]
                 let a = orb.[0]
                 let b = (orb |> Array.last).Trim()
-                printfn "%s, %s" a b
                 a,b
                 )
         |> Array.toList
@@ -56,14 +50,11 @@ K)L"
         | "COM" -> 0
         | _ -> 1+distToRoot (Map.find code m) m
         
-    parseInput inp1 |> List.length |> printfn "%A"
-
     let distances = 
         parents
         |> Map.map (
             fun child _ -> 
                 let res=distToRoot child parents
-                printfn "%A:%A" child res
                 res
             )
 
@@ -76,7 +67,38 @@ K)L"
 
     printfn "Part1: %A" nOrbits
 
-    
-        
+    let rec fullParents code map =
+        seq {
+            if map |> Map.containsKey code then
+                let parent = map |> Map.find code
+                yield parent
+                yield! fullParents parent map
+        }
 
+    let withDist code map=
+        fullParents code map
+        |> Seq.map (
+            fun c -> 
+                let res=distToRoot c parents
+                res,c
+            )
+        |> Seq.rev
+
+    fullParents "YOU" parents |> printfn "%A"
+    fullParents "SAN" parents |> printfn "%A"
+
+    withDist "YOU" parents |> printfn "%A"
+    withDist "SAN" parents |> printfn "%A"
+    
+    let dcommon=
+        Seq.zip  (withDist "YOU" parents) (withDist "SAN" parents)
+        |> Seq.filter (fun ((_,by),(_,bss))->by=bss )
+        |> Seq.map (fun ((ay,_),(_,_))->ay)
+        |> Seq.max
+    let dYou = distances |> Map.find "YOU"
+    let dSan = distances |> Map.find "SAN"
+
+
+    printfn "%A %A %A Part2: %A" dYou dSan dcommon (dYou-dcommon+dSan-dcommon-2)
     0 // return an integer exit code
+
