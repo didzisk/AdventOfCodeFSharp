@@ -31,19 +31,19 @@ let angle2 (sx,sy) (ax,ay) =
     let x=float (ax-sx)
     let y=float (sy-ay)
     let len=Math.Sqrt(x*x+y*y)
-    if x >= 0.0 then
-        if y>0.0 then
-            x/y
-        else
-            1.0-y/x
+    if x >= 0.0 && y>0.0 then
+        x/y
     else
-        if y<0.0 then
-            2.0+x/y
+        if x>0.0 && y<=0.0 then
+            1.0-y/x
         else
-            3.0-y/x
+            if x<=0.0 && y<0.0 then
+                2.0+x/y
+            else
+                3.0-y/x
     |> fun z->Math.Round (z,8)
 
-let angle (sx,sy) (ax,ay) =
+let angle3 (sx,sy) (ax,ay) =
         
     let x=float (ax-sx)
     let y=float (sy-ay)
@@ -59,6 +59,8 @@ let angle (sx,sy) (ax,ay) =
         else
             3.0+y/len
     |> fun z->Math.Round (z,8)
+
+let angle = angle3
 
 let hidings (sx,sy) (m:seq<(int * int)>) =
     let s=

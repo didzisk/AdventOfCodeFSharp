@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="RationalCalc.fs" />
     <Compile Include="ArrayCalc.fs" />
     <Compile Include="Input.fs" />
     <Compile Include="DictCalc.fs" />
