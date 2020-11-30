@@ -10,6 +10,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup />
+
   <ItemGroup>
     <ProjectReference Include="..\IntcodeComputer\IntcodeComputer.fsproj" />
     <ProjectReference Include="..\Visualizer\Visualizer.fsproj" />

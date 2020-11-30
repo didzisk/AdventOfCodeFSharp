@@ -22,6 +22,16 @@ let displayInputWithStation (sx,sy) (m:seq<(int * int)>)  =
         SmallBall mf 10.0 0.0 0.0 System.Drawing.Color.Green (float x) (float -y))
     SmallBall mf 10.0 0.0 0.0 System.Drawing.Color.Red (float sx) (float -sy)
 
+let quadrant ax ay =
+    match ax, ay with
+    | x, y when x>=0.0 && y>0.0 -> 1
+    | x, y when x>0.0 && y<=0.0 -> 2
+    | x, y when x<=0.0 && y<0.0 -> 3
+    | x, y when x<0.0 && y>=0.0 -> 4
+    | _, _ -> 0
+
+
+
 let angle1 (sx,sy) (ax,ay) =
     Math.Atan2(float (sx-ax),float (ay-sy))
     |> fun z->Math.Round (z,8)
@@ -30,16 +40,13 @@ let angle2 (sx,sy) (ax,ay) =
     
     let x=float (ax-sx)
     let y=float (sy-ay)
-    if x >= 0.0 then
-        if y>0.0 then
-            x/y
-        else
-            1.0-y/x
-    else
-        if y<0.0 then
-            2.0+x/y
-        else
-            3.0-y/x
+    let len=x*x+y*y
+    match quadrant x y with
+    | 1 -> x/len
+    | 2 -> 1.0-y/len
+    | 3 -> 2.0+x/len
+    | 4 -> 3.0-y/len
+    | _ -> 0.0
     |> fun z->Math.Round (z,8)
 
 let angle3 (sx,sy) (ax,ay) =
@@ -125,7 +132,12 @@ let the200th s=
     mapit2 (sx,sy) m
     |> Seq.mapi (fun i (x,y,d,a,n)->(i+1,x,y,d,a,n))
 
-let MainCalc = 
+let MainCalc2 a = 
+    //Input.ex0 |> parseInput |> displayInput
+    //Input.ex0 |> bestPosPrint |> printf "%A"
+    Input.ex0 |> parseInput |> hidings (1,1)|> Seq.iter (printfn "%A")
+
+let MainCalc1 a = 
     Input.ex3 |> parseInput |> displayInput
 //    Input.ex1 |> parseInput |> mapit1 |> Seq.iter (fun elm->printf "%A" elm)
 //    Input.Official |> parseInput |> mapit1 |> Seq.iter (fun elm->printf "%A" elm)
@@ -134,10 +146,13 @@ let MainCalc =
 
     Input.ex3 |> bestPosPrint |> printf "%A"
     let (sx,sy,_)=Input.ex3 |> bestPosPrint
-    Input.ex3 |> parseInput |> displayInputWithStation (sx, sy)
+//    Input.ex3 |> parseInput |> displayInputWithStation (sx, sy)
 
     //Input.ex3 |> parseInput |> hidings (sx,sy)|> Seq.iter (printfn "%A")
 
     Input.ex3 |> the200th |> Seq.iter (printfn "%A")
 
     Input.Official |> the200th |> Seq.iter (printfn "%A")
+(*    *)
+
+let MainCalc = MainCalc1 0

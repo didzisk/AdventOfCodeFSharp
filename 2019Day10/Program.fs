@@ -2,10 +2,9 @@
 
 open System
 open GridForm
-open DictCalc
 
 [<EntryPoint>]
 let main argv =
-    DictCalc.MainCalc
+    DictCalc.MainCalc |> ignore
     Console.ReadLine()
     0    
