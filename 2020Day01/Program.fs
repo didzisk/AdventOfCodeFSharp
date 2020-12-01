@@ -1,12 +1,9 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System
-open Day1Calc
+﻿open Day1Calc
 
 [<EntryPoint>]
-let main argv =
+let main _ =
     printfn "Hello World from F#!"
-    let a=aLines "Day1Input.txt"
+    let a = aLines "Day1Input.txt"
 
     a
     |> Seq.iter (fun x->
@@ -16,8 +13,8 @@ let main argv =
     printfn ""
 
     for i = 0 to a.Length-1 do
-        for j = 0 to a.Length-1 do
-            for k = 0 to a.Length-1 do
+        for j = i to a.Length-1 do
+            for k = j to a.Length-1 do
                 if a.[i] + a.[j] + a.[k] = 2020 then
                     printfn "%A" (a.[i] * a.[j] * a.[k])
 
