@@ -5,10 +5,10 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup />
+
   <ItemGroup>
     <None Include="CalcTest.fsx" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>
