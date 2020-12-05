@@ -6,142 +6,107 @@ open Common
 let Lines filename = 
     File.ReadLines filename
     |> Seq.toArray
+(*
+Start by considering the whole range, rows 0 through 127.
+F means to take the lower half, keeping rows 0 through 63.
+B means to take the upper half, keeping rows 32 through 63.
 
-let passports lines =
-    let mutable s = ""
-    seq {
-        for l in lines do
-            if l = "" then
-                yield s
-                s <- ""
+last 3 characters of FBFBBFFRLR:
+
+Start by considering the whole range, columns 0 through 7.
+R means to take the upper half, keeping columns 4 through 7.
+L means to take the lower half, keeping columns 4 through 5.
+The final R keeps the upper of the two, column 5.
+So, decoding FBFBBFFRLR reveals that it is the seat at row 44, column 5.
+
+Every seat also has a unique seat ID: multiply the row by 8, then add the column. In this example, the seat has ID 44 * 8 + 5 = 357.
+
+Here are some other boarding passes:
+
+BFFFBBFRRR: row 70, column 7, seat ID 567.
+FFFBBBFRRR: row 14, column 7, seat ID 119.
+BBFFBBFRLL: row 102, column 4, seat ID 820.
+1000000000
+*)
+let createSeat2 (line:string) =
+    line.ToCharArray()
+    |> Array.mapi (
+        fun i x -> 
+            let mask = 0b1000000000 >>> i
+            if (x='B' || x='R') then
+                mask
             else
-                s <- s+" "+l
-        yield s
-        }
-
-let createPassport (line:string) =
-    let fields=split " " line
-    fields
-    |> Array.map (fun x -> 
-        let elem=split ":" x
-        (elem.[0],elem.[1])
+                0
         )
-    |> Map.ofArray
+    |> Array.sum
 
-let containsField (passport:Map<string,string>) s =
-    passport |> Map.containsKey s
-
-let passportValid (passport:Map<string,string>) =
-    let reqFields = [|"byr"; "iyr"; "eyr"; "hgt"; "hcl"; "ecl"; "pid"|]
-    let numFields=
-        reqFields
-        |> Array.filter 
-            (containsField passport)
-            
-        |> Array.length
-    numFields>6
-
-//byr (Birth Year) - four digits; at least 1920 and at most 2002.
-let byrValid (passport:Map<string,string>) =
-    let s = passport.Item "byr"
-
-    match System.Int32.TryParse s with
-    | true, a -> 
-        a>=1920 && a<=2003
-    | _ -> false
-
-//iyr (Issue Year) - four digits; at least 2010 and at most 2020.
-let iyrValid (passport:Map<string,string>) =
-    let s = passport.Item "iyr"
-
-    match System.Int32.TryParse s with
-    | true, a -> 
-        a>=2010 && a<=2020
-    | _ -> false
-
-//eyr (Expiration Year) - four digits; at least 2020 and at most 2030.
-let eyrValid (passport:Map<string,string>) =
-    let s = passport.Item "eyr"
-
-    match System.Int32.TryParse s with
-    | true, a -> 
-        a>=2020 && a<=2030
-    | _ -> false
-
-//hgt (Height) - a number followed by either cm or in:
-//If cm, the number must be at least 150 and at most 193.
-//If in, the number must be at least 59 and at most 76.
-let hgtValid (passport:Map<string,string>) =
-    let s = passport.Item "hgt"
-
-    let inc=index "in" s
-    if inc > 0 then
-        let hin = s.Substring(0,inc)
-
-        match System.Int32.TryParse hin with
-        | true, a -> 
-            a>=59 && a<=76
-        | _ -> false
-    else 
-        let cmc=index "cm" s
-        if cmc>0 then
-            let hcm = s.Substring(0,cmc)
-            match System.Int32.TryParse hcm with
-            | true, a -> 
-                a>=150 && a<=193
-            | _ -> false
+let bitmaskToChar id mask =
+    if id &&& mask = mask then
+        if mask>7 then
+            'R'
         else
-            false
-//hcl (Hair Color) - a # followed by exactly six characters 0-9 or a-f.
-let hclValid (passport:Map<string,string>)  =
-    let s = passport.Item "hcl"
-
-    let hashPos = index "#" s
-    if hashPos<>0 then
-        false
+            'B'
     else
-        let hex=s.Substring(1)
-        if hex.Length <> 6 then
-            false
+        if mask>7 then
+            'L'
         else
-            try
-                System.Int32.Parse(hex, System.Globalization.NumberStyles.HexNumber)
-                |> ignore
-                true
-            with
-            | _ -> false 
+            'F'
+
+let idToSeat (id:int) =
+    seq {
+        for i= 0 to 9 do
+            let mask = 0b1000000000 >>> i
+            yield bitmaskToChar id mask
+            }
+    |> asString
 
 
-//ecl (Eye Color) - exactly one of: amb blu brn gry grn hzl oth.
-let eclValid (passport:Map<string,string>)  =
-    let s = passport.Item "ecl"
 
-    let validCols = ["amb"; "blu"; "brn"; "gry"; "grn"; "hzl"; "oth"]
-    validCols
-    |> List.contains s
-
-//pid (Passport ID) - a nine-digit number, including leading zeroes.
-let pidValid (passport:Map<string,string>)  =
-    let s = passport.Item "pid"
-    if s.Length=9 then
-        try
-            System.Int64.Parse(s)
-            |> ignore
-            true
-        with
-        | _ -> false 
+//brute force shame:
+let createSeat (line:string) =
+    let srow= line.Substring(0,7)
+    let mutable k =
+        if srow.[0]='B' then
+            64
+        else
+            0
+    if srow.[1]='B' then
+        k<-k+32
     else
-        false
-
-
-
-let passportValid2 (passport:Map<string,string>) =
-    passportValid passport
-    && byrValid passport
-    && iyrValid passport
-    && eyrValid passport
-    && hgtValid passport
-    && hclValid passport
-    && eclValid passport
-    && pidValid passport
+        ()
+    if srow.[2]='B' then
+        k<-k+16
+    else
+        ()
+    if srow.[3]='B' then
+        k<-k+8
+    else
+        ()
+    if srow.[4]='B' then
+        k<-k+4
+    else
+        ()
+    if srow.[5]='B' then
+        k<-k+2
+    else
+        ()
+    if srow.[6]='B' then
+        k<-k+1
+    else
+        ()
+    let scol= line.Substring(7,3)
+    let mutable c =
+        if scol.[0]='R' then
+            4
+        else 
+            0
+    if scol.[1]='R' then
+        c<-c+2
+    else
+        ()
+    if scol.[2]='R' then
+        c<-c+1
+    else
+        ()
+    8*k+c
 
