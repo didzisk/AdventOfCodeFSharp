@@ -9,12 +9,13 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Day6Calc.fs" />
+    <Content Include="Day6InputExample.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Day6Input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="Program.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>

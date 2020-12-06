@@ -7,12 +7,14 @@ open Day6Calc
 let main argv =
     printfn "Hello World from F#!"
 
-    for i = 89 to 1023 do
-        idToSeat i
-        |> printfn "%s"
+    part1 "Day6InputExample.txt"
+    |> printfn "%d"
 
-    Lines "Day6Input.txt"
-    |> Array.iter (printfn "%s")
+    part1 "Day6Input.txt"
+    |> printfn "%d"
+
+    part2 "Day6InputExample.txt"
+    part2 "Day6Input.txt"
 
 
     0 // return an integer exit code
