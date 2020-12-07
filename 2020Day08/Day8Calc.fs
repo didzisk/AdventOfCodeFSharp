@@ -1,0 +1,10 @@
+﻿module Day8Calc
+
+open System.IO
+open Common
+open System.Text.RegularExpressions
+
+let Lines filename = 
+    File.ReadLines filename
+    |> Seq.toArray
+

@@ -2,75 +2,57 @@
 
 open System.IO
 open Common
+open System.Text.RegularExpressions
 
 let Lines filename = 
     File.ReadLines filename
     |> Seq.toArray
 
-let answers lines =
-    let mutable s = ""
-    seq {
-        for l in lines do
-            if l = "" then
-                yield s
-                s <- ""
-            else
-                s <- s+l
-        yield s
-        }
+//vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
+//faded blue bags contain no other bags.
 
-let uniqueAnswers (a:string) =
-    a.ToCharArray()
-    |> Set.ofArray
-    |> Set.count
 
-let sumUniqueAnswers (inp:string seq) =
-    inp
-    |> Seq.map uniqueAnswers
-    |> Seq.sum
-
-let part1 filename =
-    Lines filename
-    |> answers
-    |> sumUniqueAnswers
-
+//for line in lines:
+//color = re.match(r'(.+?) bags contain', line)[1]
+//for ct, innercolor in re.findall(r'(\d+) (.+?) bags?[,.]', line):
+//    ct = int(ct)
+//    containedin[innercolor].add(color)
+//    contains[color].append((ct, innercolor))
+(*
+let addToContainedIn (containedIn:Map<string, Set<string>>) (line:string)
+    let thisContainedIn =
+        if containedIn.ContainsKey innercolor then
+            Set.add thisColor (containedIn.Item innercolor)
+        else
+            Set.add thisColor Set.empty
     
-let answerSets lines =
-    let mutable s = List.empty
-    seq {
-        for l in lines do
-            if l = "" then
-                yield s
-                s <- List.empty
+
+let parseOneLine (line:string) (containedIn:Map<string, Set<string>>) (contains:Map<string, List<(int * string)>>) =
+    
+    let thisColor=Regex.Match( line, "(.+?) bags contain").Value
+    for m in Regex.Matches(line, "(\d+) (.+?) bags?[,.]") do
+        let contentsEntry = split " " (m.Value)
+        let contentsCount = int32 contentsEntry.[0]
+        let innercolor = contentsEntry.[1]
+        let thisContainedIn =
+            if containedIn.ContainsKey innercolor then
+                Set.add thisColor (containedIn.Item innercolor)
             else
-                let newSet=
-                    l.ToCharArray()
-                    |> Set.ofArray
-                s<-newSet::s
-                
-        yield s
-        }
-
-let innerEqualAnswers first (s:Set<char> list)  =
-    let action resultSoFar x = Set.intersect resultSoFar x
-    s |> List.fold action first
-    |> Set.count
-
-let equalAnswers (s:Set<char> list) =
-    match s with
-    | [] -> 
-        0
-    | first::rest -> 
-        let max = innerEqualAnswers first rest
-        max
+                Set.add thisColor Set.empty
+    let newcontainedIn = Map.add thisColor thisContainedIn containedIn
+    Set.add innercolor thisContainedIn
 
 
-  
-let part2 filename =
-    Lines filename
-    |> answerSets
-    |> Seq.map equalAnswers
-    |> Seq.sum
-    |> printfn "%A"
+let containedIn lines =
+    let thisContainedIn = Set.empty<string>
+    for line in lines do
+        let m = Regex.Match( line, "(.+?) bags contain")
+        let contentsEntry = split " " (Regex.Matches(line, "(\d+) (.+?) bags?[,.]"))
+        let contentsCount = int32 contentsEntry.[0]
+        let innercolor = contentsEntry.[1]
+        
+        Set.add innercolor thisContainedIn
+        ()
+    thisContainedIn
 
-  
+    *)
