@@ -18,6 +18,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Handheld\Handheld.fsproj" />
+  </ItemGroup>
 
 </Project>
