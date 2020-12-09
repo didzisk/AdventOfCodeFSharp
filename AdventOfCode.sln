@@ -55,6 +55,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Handheld", "Handheld\Handhe
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "2020Day09", "2020Day09\2020Day09.fsproj", "{8E95D3CD-8E47-4B38-BF67-3D991B777083}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "2020Day10", "2020Day10\2020Day10.fsproj", "{EAE8BC03-54E1-4404-AAB2-4E46DE77640B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +167,10 @@ Global
 		{8E95D3CD-8E47-4B38-BF67-3D991B777083}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E95D3CD-8E47-4B38-BF67-3D991B777083}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E95D3CD-8E47-4B38-BF67-3D991B777083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAE8BC03-54E1-4404-AAB2-4E46DE77640B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE8BC03-54E1-4404-AAB2-4E46DE77640B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE8BC03-54E1-4404-AAB2-4E46DE77640B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE8BC03-54E1-4404-AAB2-4E46DE77640B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
