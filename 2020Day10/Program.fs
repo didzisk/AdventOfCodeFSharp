@@ -12,17 +12,17 @@ let main argv =
     |> printfn "%A"
 
     calc1 "Day10InputExample.txt"
-    |> printfn "%A"
+    |> printfn "%d"
 
     calc1 "Day10Input.txt"
-    |> printfn "%A"
+    |> printfn "%d"
 
     calc2 "Day10InputExample.txt"
-    |> printfn "%A"
+    |> printfn "%d"
     calc2 "Day10InputExample2.txt"
-    |> printfn "Ex2 %A"
+    |> printfn "Ex2 %d"
 
     calc2 "Day10Input.txt"
-    |> printfn "Part2 %A"
+    |> printfn "Part2 %d"
 
     0 // return an integer exit code

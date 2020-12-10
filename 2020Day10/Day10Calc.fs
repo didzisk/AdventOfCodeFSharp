@@ -5,11 +5,10 @@ open System.IO
 let Lines filename = 
     File.ReadLines filename
     |> Seq.map int
-    |> Seq.toArray
+    |> Seq.toList
 
 let sLines lines =
-    (Array.sort lines)
-    |> Array.append [| 0 |]
+    0::(List.sort lines)
 
 
 let hops lines =
@@ -18,39 +17,35 @@ let hops lines =
         |> sLines
 
     slines
-    |> Array.mapi
+    |> List.mapi
         (fun i x->
-            if i<(Array.length slines)-1 then
+            if i<(List.length slines)-1 then
                 slines.[i+1]-x
             else
                 3
         )
 
-let ones (lines:int array) =
+let ones (lines:int list) =
     lines
-    |> Array.filter (fun x->x=1)
-    |> Array.length
+    |> List.filter (fun x->x=1)
+    |> List.length
 
-let threes (lines:int array) =
+let threes lines =
     lines
-    |> Array.filter (fun x->x=3)
-    |> Array.length
+    |> List.filter (fun x->x=3)
+    |> List.length
     
 let calc1 filename =
-    let lines =
-        filename
-        |> Lines
-        |> Array.sort
 
     let shops =
-        lines
+        Lines filename
         |> hops
 
     let c1 = ones shops
     let c3 = threes shops
     c1 * c3
 
-let rec countways (adapters:int list) (start:int) (goal:int) memo =
+let rec countways adapters start goal memo =
     let k=(List.length adapters, start)
     if Map.containsKey k memo then
         memo, memo.[k]
@@ -79,7 +74,6 @@ let calc2 filename =
     let lines =
         filename
         |> Lines
-        |> Array.toList
         |> List.sort
 
     let goal = (List.max lines) + 3
