@@ -79,5 +79,7 @@ let main argv =
     |> countPassengers
     |> printfn "Pt2: %d"
 
+    Lines "Day11Input.txt"
+    |> goNext2visual
 
     0 // return an integer exit code

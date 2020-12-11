@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Day11Show.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Day11Calc.fs" />
     <Content Include="Day11Input.txt">
@@ -21,6 +22,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Visualizer\Visualizer.fsproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿module Day11Calc
 
+open System
 open System.IO
 open Common
 
@@ -196,3 +197,18 @@ let rec goNext2 lines =
         newLines
     else
         goNext2 newLines
+
+let rec goNext2visual lines =
+    Console.Clear()
+    lines
+    |> Array.iter (printfn "%s")
+    Threading.Thread.Sleep(1000)
+
+    let newLines = nextRound2 lines
+    if arrEqual lines newLines then
+        Console.Clear()
+        newLines
+        |> Array.iter (printfn "%s")
+        newLines
+    else
+        goNext2visual newLines
