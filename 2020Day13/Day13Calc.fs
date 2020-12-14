@@ -111,7 +111,7 @@ let rec gcd a b =
     then abs a
   else gcd b (a % b)
  
-let CD n g = //chinese
+let CD n g = //chinese remainder
   match Seq.fold(fun n g->if (gcd n g)=1 then n*g else 0) 1 g with
   |0 -> None
   |fN-> Some ((Seq.fold2(fun n i g -> n+i*(fN/g)*(MI g ((fN/g)%g))) 0 n g)%fN)

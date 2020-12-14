@@ -28,7 +28,13 @@ let replace (t:string) (o: string) (s:string) =
 let lines s =
     split "\r\n" s
 
+let charSeqToString (a:char seq) =
+    String(Seq.toArray(a))
+
 let md5 = MD5.Create ()
+
+let asBinary (b:int64) =
+    Convert.ToString(b, 2)
 
 let hex (bytes: seq<byte>) =
     bytes
