@@ -37,6 +37,14 @@ let main argv =
     |> calc2
     |> (printfn "%A")
 
+    "Day14InputExample2.txt"
+    |> show2
+
+    "Day14Input.txt"
+    |> calc2
+    |> (printfn "%A")
+
+
 //    |> Array.map asBinary
 //    |> (printfn "42:%s with all masks : %A" (asBinary 42L))
 

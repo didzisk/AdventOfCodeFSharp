@@ -133,11 +133,11 @@ let processtwo ((mapstate:Map<int64,int64>),currentmask:string) (line:string) =
         let newMapState = 
             addresses
             |> List.fold 
-                (fun mapstateSoFar currAddr -> 
+                (fun mapstateSoFar currAddr ->
                     mapstateSoFar
-                    |> Map.add currAddr arg
+                    |> Map.add currAddr arg 
                 )
-                Map.empty
+                mapstate
         newMapState, currentmask
 
 let calc2 filename =
@@ -147,3 +147,9 @@ let calc2 filename =
     |> Map.toArray
     |> Array.sumBy (fun (adr, x) -> x)
 
+let show2 filename =
+    Lines filename
+    |> Seq.fold processtwo (Map.empty,"")
+    |> fst
+    |> Map.toArray
+    |> printfn "%A"
