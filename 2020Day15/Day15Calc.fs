@@ -4,15 +4,12 @@ open System
 open System.IO
 open Common
 
-let Lines filename =
-    let arr = 
-        File.ReadLines filename
-        |> Seq.head
-        |> split ","
-    Array.Reverse arr
-    arr
-    |> Array.toList
-    |> List.map int64
+let MLines filename =
+    File.ReadLines filename
+    |> Seq.head
+    |> split ","
+    |> Array.mapi (fun i x -> (int64 x, int64 i))
+    |> Map.ofArray
 
 let addLastPos (oldmap:Map<int64, int64>) (newVal:int64) (newPos:int64) =
     oldmap.Add(newVal, newPos)
@@ -20,45 +17,44 @@ let addLastPos (oldmap:Map<int64, int64>) (newVal:int64) (newPos:int64) =
 //let getLastPos
 
 
-let nextNum list =
-    match list with 
-    | x::xs ->
-        let agearr =
-            list
-            |> List.mapi (fun i elm -> i,elm)
-            |> List.filter (fun (i,elm) -> elm =x)
-            |> List.toArray
-
-        let ageopt =
-            if Array.length agearr >1 then
-                Some (fst(agearr.[1])-fst(agearr.[0]))
-            else
-                None
-
-        match ageopt with 
-        | None -> 0L
-        | Some elm -> (int64 elm)
-    | [] -> failwith "unexpected"
 
 
-let listUnfolder len list =
-    if List.length list = len then
+let listUnfolder len (posmap:Map<int64, int64>, newVal:int64, pos:int64) =
+    if pos = len then
         None
     else
-        let nextval = nextNum list
-        Some (nextval, nextval::list)
+        let nextval = 
+            if posmap.ContainsKey(newVal) then
+                pos - posmap.[newVal]
+            else
+                0L
+        let nextMap = posmap.Add(newVal, pos)
+        Some (nextval, (nextMap, nextval, pos+1L))
 
-let numlist len list =
-    List.unfold (listUnfolder len) list
+let numlist len (posmap:Map<int64, int64>) =
+    //let mapStudents = students 
+    //|> Array.map (fun s -> (s.getId(), s.getScore()))
+    //|> Map.ofArray
+    let pos = int64 (Map.count posmap)
+
+    let nextval = 0L
+        //if posmap.ContainsKey(newVal) then
+        //    pos - posmap.[newVal]
+        //else
+        //    0L
+    List.unfold (listUnfolder len) (posmap,  nextval, pos)
 
 let calc1 list =
-    let reslist = numlist 2020 list 
+    let len = 2019L //- int64 (Map.count list)
+
+    let reslist = numlist len list 
     match reslist with
     | [] -> failwith "unexpected"
     | ls-> List.last ls
 
 let calc2 list =
-    let reslist = numlist 300000 list 
+    let reslist = numlist 29999999L list 
+                          
     match reslist with
     | [] -> failwith "unexpected"
     | ls-> List.last ls
