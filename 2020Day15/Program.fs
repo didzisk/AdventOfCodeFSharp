@@ -9,6 +9,23 @@ let main argv =
 
     "Day15InputExample.txt"
     |> Lines
-    |> Array.iter (printfn "%s")
+    |> nextNum
+    |> printfn "%d"
+
+    "Day15InputExample.txt"
+    |> Lines
+    |> calc1
+    |> printfn "Ex1 %d"
+
+    "Day15Input.txt"
+    |> Lines
+    |> calc1
+    |> printfn "Calc1 %d"
+
+    "Day15InputExample.txt"
+    |> Lines
+    |> calc2
+    |> printfn "Ex2 %d"
+
 
     0 // return an integer exit code
