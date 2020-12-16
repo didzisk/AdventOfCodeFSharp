@@ -162,6 +162,7 @@ let show21 filename =
             printfn "num: %A rule:%A" a r.FieldName
         )
 
+//after manual compression:
 //num: 18 rule:"departure time"
 //num: 6 rule:"departure date"
 //num: 14 rule:"departure location"
@@ -169,7 +170,7 @@ let show21 filename =
 //num: 15 rule:"departure track"
 //num: 13 rule:"departure platform"
 
-let calc2 =
+let calc2 = 
     let arr =
         "151,71,67,113,127,163,131,59,137,103,73,139,107,101,97,149,157,53,109,61"
         |> split ","
