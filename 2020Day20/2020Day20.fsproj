@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Day20Worm.txt" />
     <Compile Include="Common.fs" />
     <Compile Include="Day20Calc.fs" />
     <Content Include="Day20Input.txt">
@@ -17,7 +18,5 @@
     </Content>
     <Compile Include="Program.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
 </Project>

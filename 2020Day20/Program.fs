@@ -7,16 +7,17 @@ open Day20Calc
 let main argv =
     printfn "Hello World from F#!"
 
+    //"Day20Input.txt"
+    //|> readTiles
+    //|> printfn "%A"
+
     "Day20Input.txt"
-    |> Lines
-    |> Array.iter (printfn "%s")
+    |> calc1
 
 
-
-
-
-
-
+    "Day20Input.txt"
+    |> calc2
+    |> showPic
 
 
 
