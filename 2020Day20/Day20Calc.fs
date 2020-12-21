@@ -305,7 +305,7 @@ let addLineWithMove ((arr:bool[,]),(row:int),(col:int),((tiles:Tile array),(idx:
     let (newTiles, newIdx) = goDown (tiles, idx)
     (narr, nrow+1, 0, (newTiles,newIdx))
 
-let calc2 filename =
+let calc2arr filename =
     
     let tiles = 
         filename
@@ -346,8 +346,79 @@ let calc2 filename =
         
     narr
           
-let worm = @"   
-# 
-#    ##    ##    ###
- #  #  #  #  #  #   
-"
+let readWorm = 
+    let lines = File.ReadAllLines "Day20Worm.txt"
+    seq {
+        for row = 0 to (Array.length lines-1) do
+            for col = 0 to (String.length lines.[row] - 1) do
+                if lines.[row].[col] = '#' then
+                    yield row, col
+         }
+    |> Seq.toList
+
+let isWorm (arr:bool[,]) (row:int) (col:int) (worm:(int*int) list) =
+    let len = Array2D.length1 arr
+    worm
+    |> List.exists
+        (fun (rw, cw) ->
+            if row + rw >= len || col + cw >= len then
+                true //it snakes out of bounds
+            else
+                arr.[row+rw, col+cw] = false //it's empty where worm is supposed to be
+        )
+    |> not
+
+let findWorms arr =
+    let worm = readWorm
+    let len = Array2D.length1 arr
+    seq {
+        for row = 0 to len-1 do
+            for col = 0 to len-1 do
+                if isWorm arr row col worm then
+                    yield row,col
+                else
+                    ()
+    }
+
+let countWorms arr =
+    findWorms arr
+    |> Seq.length
+
+let countWormsAll arr =
+    for op = 0 to 7 do
+        printfn "%d %d" op (countWorms (perform op arr))
+
+let calc2count filename = 
+    let arr = calc2arr filename 
+    countWormsAll arr
+
+let calcFree2 filename =
+    let arr = calc2arr filename 
+    let numBlack = 
+        let len = Array2D.length1 arr
+        seq {
+            for row = 0 to len-1 do
+                for col = 0 to len-1 do
+                    if arr.[row,col] then
+                        yield true
+                    else
+                        ()
+        }
+        |> Seq.length
+    let numInWorms = 26* 15
+    numBlack - numInWorms
+    
+    
+
+(*
+let drawWorms filename =
+    let arr =
+        calc2arr filename
+        |> perform 2
+
+    let worm = readWorm
+    let worms = findWorms arr
+
+    for (row,col) in worms do
+        
+        *)

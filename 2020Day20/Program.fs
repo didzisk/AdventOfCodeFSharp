@@ -16,9 +16,11 @@ let main argv =
 
 
     "Day20Input.txt"
-    |> calc2
-    |> showPic
+    |> calc2count
 
+    "Day20Input.txt"
+    |> calcFree2
+    |> printfn "Answer 2: %d"
 
 
 
