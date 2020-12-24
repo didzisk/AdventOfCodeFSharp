@@ -24,15 +24,15 @@ let command (line:string) =
                         else
                             failwith "Unexpected command"
 
-let rec calcTilesOneLine (currentWorld: Map<(int*int), bool>) (r:int) (c:int) (line:string)  : Map<(int*int), bool> =
+let rec calcTilesOneLine (currentWorld: Set<(int*int)>) (r:int) (c:int) (line:string)  : Set<(int*int)> =
         let (rplus, cplus), newline = command line
         let rnew = r+rplus
         let cnew = c+cplus
         if newline = String.Empty then
-            if currentWorld.ContainsKey (rnew, cnew) then
-                currentWorld |> Map.remove (rnew, cnew) 
+            if currentWorld.Contains (rnew, cnew) then
+                currentWorld |> Set.remove (rnew, cnew) 
             else
-                currentWorld |> Map.add (rnew, cnew) true
+                currentWorld |> Set.add (rnew, cnew)
         else
             calcTilesOneLine currentWorld rnew cnew newline
 
@@ -44,10 +44,44 @@ let calc1 filename =
 
     let world = 
         lines
-        |> Seq.fold folder Map.empty
+        |> Seq.fold folder Set.empty
 
     world 
-    |> Map.iter (fun (r,c) _ ->  printfn "%d, %d" r c)
+    |> Set.iter (fun (r,c)->  printfn "%d, %d" r c)
 
     world
-    |> Map.count
+    |> Set.count
+
+let lifeOne (oldWorld: Set<(int*int)>) (newWorld: Set<(int*int)>) (r:int) (c:int) =
+    let neighbors = [|(0,-1); (0,1); (-1,0); (1,-1); (1,0)|]
+    
+    let numNeighbors =
+        neighbors
+        |> Array.filter 
+            (fun (rplus, cplus) ->
+                oldWorld.Contains (r+rplus, c+cplus)
+            )
+        |> Array.length
+
+let limits (oldWorld: Set<(int*int)>) =
+    let minrow =
+        oldWorld
+        |> Set.map 
+            (fun (r,_)-> r)
+        |> Set.minElement
+
+    (*
+Any black tile with zero or more than 2 black tiles immediately adjacent to it is flipped to white.
+Any white tile with exactly 2 black tiles immediately adjacent to it is flipped to black.    
+    *)
+
+    if oldWorld.Contains (r,c) then
+        if numNeighbors = 0 || numNeighbors >=2 then
+            newWorld.Remove (r,c)
+        else
+            newWorld.Add (r,c)
+    else
+        if numNeighbors = 2 then
+            newWorld.Add (r,c)
+        else
+            oldWorld
