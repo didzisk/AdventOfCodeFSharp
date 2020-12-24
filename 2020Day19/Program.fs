@@ -5,14 +5,9 @@ open Day19Calc
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
-    "Day19InputExample.txt"
-    |> Lines
-    |> Array.iter (printfn "%s")
-
    
     splitLines "Day19Input.txt"
-
+    |> printfn "%A"
 
 
 
