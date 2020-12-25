@@ -63,18 +63,6 @@ let lifeOne (oldWorld: Set<(int*int)>) (newWorld: Set<(int*int)>) (r:int) (c:int
             )
         |> Array.length
 
-let limits (oldWorld: Set<(int*int)>) =
-    let minrow =
-        oldWorld
-        |> Set.map 
-            (fun (r,_)-> r)
-        |> Set.minElement
-
-    (*
-Any black tile with zero or more than 2 black tiles immediately adjacent to it is flipped to white.
-Any white tile with exactly 2 black tiles immediately adjacent to it is flipped to black.    
-    *)
-
     if oldWorld.Contains (r,c) then
         if numNeighbors = 0 || numNeighbors >=2 then
             newWorld.Remove (r,c)
@@ -85,3 +73,39 @@ Any white tile with exactly 2 black tiles immediately adjacent to it is flipped 
             newWorld.Add (r,c)
         else
             oldWorld
+
+let nextStep (oldWorld: Set<(int*int)>) =
+    let minrow =
+        oldWorld
+        |> Set.map 
+            (fun (r,_)-> r)
+        |> Set.minElement
+    let maxrow =
+        oldWorld
+        |> Set.map 
+            (fun (r,_)-> r)
+        |> Set.maxElement
+    let mincol =
+        oldWorld
+        |> Set.map 
+            (fun (_,c)-> c)
+        |> Set.minElement
+    let maxcol =
+        oldWorld
+        |> Set.map 
+            (fun (_,c)-> c)
+        |> Set.maxElement
+
+    let worldseq=
+        seq {
+                for r = (minrow - 1) to (maxrow + 1) do
+                    for c = (mincol-1) to (maxcol + 1) do
+                    yield (r,c)
+            }
+    (*
+Any black tile with zero or more than 2 black tiles immediately adjacent to it is flipped to white.
+Any white tile with exactly 2 black tiles immediately adjacent to it is flipped to black.    
+    *)
+    
+    let folder2 (oldWorld: Set<(int*int)>) (newWorld: Set<(int*int)>) (r,c) =
+
