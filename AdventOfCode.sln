@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.87
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Day4", "Day4\Day4.fsproj", "{E7FEF0E1-406D-4EF6-A699-F1BD56DAFD7D}"
 EndProject
@@ -79,7 +79,9 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "2020Day20", "2020Day20\2020
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "2020Day21", "2020Day21\2020Day21.fsproj", "{96308838-026A-4CDB-813B-FCCEBB2B288B}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "2020Day24", "2020Day24\2020Day24.fsproj", "{824BE522-30BB-41BB-B15F-0964779F3327}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "2020Day24", "2020Day24\2020Day24.fsproj", "{824BE522-30BB-41BB-B15F-0964779F3327}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "2021Day01", "2021Day01\2021Day01.fsproj", "{EC12C8DF-0E0A-4FD4-AE84-E1DDA092B37F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -243,6 +245,10 @@ Global
 		{824BE522-30BB-41BB-B15F-0964779F3327}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{824BE522-30BB-41BB-B15F-0964779F3327}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{824BE522-30BB-41BB-B15F-0964779F3327}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC12C8DF-0E0A-4FD4-AE84-E1DDA092B37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC12C8DF-0E0A-4FD4-AE84-E1DDA092B37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC12C8DF-0E0A-4FD4-AE84-E1DDA092B37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC12C8DF-0E0A-4FD4-AE84-E1DDA092B37F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
