@@ -79,7 +79,7 @@ let Calc1 filename =
 
     gamma * epsilon, $"gamma {gamma}" , $"epsilon {epsilon}"
 
-let folder2 numDigits (a:list<int32>) i =
+let folder2 comparer numDigits (a:list<int32>) i =
 
     if a.Length = 1 then
         a
@@ -92,7 +92,7 @@ let folder2 numDigits (a:list<int32>) i =
 
         let mask = 1<<<(numDigits-i)
 
-        if statusReport.Zeros > statusReport.Ones then
+        if comparer(statusReport.Zeros > statusReport.Ones) then
             a
             |> List.filter (
                 fun x-> 
@@ -131,27 +131,24 @@ let folder3 numDigits (a:list<int32>) i =
                     x &&& mask = 0
                 )
 
-let CalcOxygen filename = 
+let calcGasScrubber comparer filename =
     let (all, numDigits) = Lines filename
 
     let status = 
         all
         |> Seq.fold (folder1 numDigits) initArr
 
-    let oneFolder = folder2 numDigits
+    let oneFolder = folder2 comparer numDigits
 
     [1..numDigits]
     |> List.fold oneFolder (Seq.toList(all))
 
-let CalcCO2 filename = 
-    let (all, numDigits) = Lines filename
+let oxygenComparer b = b
+let Co2Comparer b = not b
 
-    let status = 
-        all
-        |> Seq.fold (folder1 numDigits) initArr
+//no need to write out the final argument for the two functions
+let CalcOxygen = 
+    calcGasScrubber oxygenComparer 
 
-    let oneFolder = folder3 numDigits
-
-    [1..numDigits]
-    |> List.fold oneFolder (Seq.toList(all))
-
+let CalcCO2 = 
+    calcGasScrubber Co2Comparer
