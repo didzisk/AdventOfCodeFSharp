@@ -80,9 +80,6 @@ let Calc1 filename =
     gamma * epsilon, $"gamma {gamma}" , $"epsilon {epsilon}"
 
 let folder2 numDigits (a:list<int32>) i =
-    printfn ""
-    a
-    |> List.iter (fun x-> printf $" b{Convert.ToString(x,2)} ")
 
     if a.Length = 1 then
         a
@@ -91,15 +88,10 @@ let folder2 numDigits (a:list<int32>) i =
             a
             |> Seq.fold (folder1 (numDigits)) initArr
 
-        printfn ""
-        statusReports
-        |> Array.iteri(fun i x -> printfn $"pos:{i} 0:{x.Zeros} 1:{x.Ones}")
-
         let statusReport = statusReports[numDigits-i]
 
         let mask = 1<<<(numDigits-i)
-        printfn ""
-        printfn $"mask b{Convert.ToString(mask,2)} "
+
         if statusReport.Zeros > statusReport.Ones then
             a
             |> List.filter (
@@ -114,9 +106,6 @@ let folder2 numDigits (a:list<int32>) i =
                 )
 
 let folder3 numDigits (a:list<int32>) i =
-    printfn ""
-    a
-    |> List.iter (fun x-> printf $" b{Convert.ToString(x,2)} ")
 
     if a.Length = 1 then
         a
@@ -124,10 +113,6 @@ let folder3 numDigits (a:list<int32>) i =
         let statusReports = 
             a
             |> Seq.fold (folder1 (numDigits)) initArr
-
-        printfn ""
-        statusReports
-        |> Array.iteri(fun i x -> printfn $"pos:{i} 0:{x.Zeros} 1:{x.Ones}")
 
         let statusReport = statusReports[numDigits-i]
 
