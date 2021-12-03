@@ -26,8 +26,8 @@ let folder1 numDigits (state:StatusReport[]) line =
             let mask = 1 <<< i
             let newElm =
                 match line &&& mask with
-                | 0 -> { state[i] with Ones = 1 + state[i].Ones} 
-                | _ -> { state[i] with Zeros = 1 + state[i].Zeros} 
+                | 0 -> { state[i] with Zeros = 1 + state[i].Zeros} 
+                | _ -> { state[i] with Ones = 1 + state[i].Ones} 
             yield newElm
     }
     |> Seq.toArray
@@ -89,15 +89,18 @@ let folder2 numDigits (a:list<int32>) i =
     else
         let statusReports = 
             a
-            |> Seq.fold (folder1 (numDigits-i+1)) initArr
-        printfn "%A" statusReports
+            |> Seq.fold (folder1 (numDigits)) initArr
 
-        let statusReport = statusReports[0]
+        printfn ""
+        statusReports
+        |> Array.iteri(fun i x -> printfn $"pos:{i} 0:{x.Zeros} 1:{x.Ones}")
+
+        let statusReport = statusReports[numDigits-i]
 
         let mask = 1<<<(numDigits-i)
-        printfn
+        printfn ""
         printfn $"mask b{Convert.ToString(mask,2)} "
-        if statusReport.Zeros < statusReport.Ones then
+        if statusReport.Zeros > statusReport.Ones then
             a
             |> List.filter (
                 fun x-> 
@@ -110,7 +113,40 @@ let folder2 numDigits (a:list<int32>) i =
                     x &&& mask <> 0
                 )
 
-let Calc2 filename = 
+let folder3 numDigits (a:list<int32>) i =
+    printfn ""
+    a
+    |> List.iter (fun x-> printf $" b{Convert.ToString(x,2)} ")
+
+    if a.Length = 1 then
+        a
+    else
+        let statusReports = 
+            a
+            |> Seq.fold (folder1 (numDigits)) initArr
+
+        printfn ""
+        statusReports
+        |> Array.iteri(fun i x -> printfn $"pos:{i} 0:{x.Zeros} 1:{x.Ones}")
+
+        let statusReport = statusReports[numDigits-i]
+
+        let mask = 1<<<(numDigits-i)
+
+        if statusReport.Zeros > statusReport.Ones then
+            a
+            |> List.filter (
+                fun x-> 
+                    x &&& mask <> 0
+                )
+        else
+            a
+            |> List.filter (
+                fun x-> 
+                    x &&& mask = 0
+                )
+
+let CalcOxygen filename = 
     let (all, numDigits) = Lines filename
 
     let status = 
@@ -118,6 +154,18 @@ let Calc2 filename =
         |> Seq.fold (folder1 numDigits) initArr
 
     let oneFolder = folder2 numDigits
+
+    [1..numDigits]
+    |> List.fold oneFolder (Seq.toList(all))
+
+let CalcCO2 filename = 
+    let (all, numDigits) = Lines filename
+
+    let status = 
+        all
+        |> Seq.fold (folder1 numDigits) initArr
+
+    let oneFolder = folder3 numDigits
 
     [1..numDigits]
     |> List.fold oneFolder (Seq.toList(all))

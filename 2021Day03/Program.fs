@@ -16,5 +16,26 @@ printfn "Hello from F#"
 //|> printfn "2 res %A"
 
 "Day03InputExample.txt"
-|> Calc2
-|> printfn "2 ex %A"
+|> CalcOxygen
+|> printfn "Oxygen ex %A"
+
+"Day03InputExample.txt"
+|> CalcCO2
+|> printfn "CO2 ex %A"
+
+
+let oxygen =
+    "Day03Input.txt"
+    |> CalcOxygen
+    |> List.head
+oxygen 
+|> printfn "Oxygen %A"
+
+let Co2 = 
+    "Day03Input.txt"
+    |> CalcCO2
+    |> List.head
+Co2 
+|> printfn "CO2 %A"
+
+printfn $"Result {oxygen * Co2}"
